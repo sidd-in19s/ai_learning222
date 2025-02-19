@@ -1,0 +1,60 @@
+/* Home Page Layout */
+.home-container {
+          text-align: center;
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          background-color: #f4f4f4;
+          padding-top: 60px;
+        }
+        
+        .navbar {
+          position: fixed;  
+          top: 0;
+          left: 0;
+          width: 98%;
+          height: 30px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem 2rem;
+          background: #007bff;
+          color: white;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          z-index: 1000; /* Keeps it above everything */
+        }
+        
+        .auth-links a {
+          color: white;
+          margin-left: 15px;
+          text-decoration: none;
+          font-weight: bold;
+        }
+        
+        .auth-links a:hover {
+          text-decoration: underline;
+        }
+        
+        .user-info {
+          display: flex;
+          align-items: center;
+        }
+        
+        .user-info span {
+          margin-right: 15px;
+        }
+        
+        button {
+          background-color: #ff4d4d;
+          color: white;
+          border: none;
+          padding: 8px 15px;
+          cursor: pointer;
+          border-radius: 5px;
+        }
+        
+        .home-content {
+          margin-top: 80px; /* Adjusts spacing below navbar */
+        }
+        
