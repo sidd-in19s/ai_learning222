@@ -1,0 +1,11 @@
+.roadmap-detail {
+          position: relative;
+          padding: 20px;
+        }
+        
+        .video-container {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+        }
+        

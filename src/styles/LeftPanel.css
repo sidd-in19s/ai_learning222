@@ -1,0 +1,8 @@
+.left-panel {
+          flex: 1;
+          padding: 20px;
+          background-color: #e9ecef;
+          height: 100vh;
+          overflow-y: auto;
+        }
+        
