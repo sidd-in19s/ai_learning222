@@ -1,39 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { auth, db } from "../firebase"; // Import Firebase authentication & Firestore
-import { signOut, onAuthStateChanged } from "firebase/auth";
+import { db } from "../firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { Link, useNavigate } from "react-router-dom";
-import LeftPanel from "../components/LeftPanel";  // Adjust the path if needed
-import RightPanel from "../components/RightPanel"; // Adjust the path if needed
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import "../styles/Home.css";
 
-const Home = () => {
-  const [user, setUser] = useState(null);
+const genAI = new GoogleGenerativeAI("AIzaSyAcIrHfWopVExYUghj5h-RyfnkvGohY7QQ");
+
+const Home = ({ user }) => {
   const [interest, setInterest] = useState("Not Found");
-  const navigate = useNavigate();
+  const [fact, setFact] = useState("Loading...");
+  const [milestonesCompleted, setMilestonesCompleted] = useState(0);
 
-  // Check authentication state
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Fetch user interest from Firestore
   useEffect(() => {
     const fetchInterest = async () => {
       if (user) {
         try {
-          const q = query(
-            collection(db, "users"),
-            where("email", "==", user.email)
-          );
+          const q = query(collection(db, "users"), where("email", "==", user.email));
           const querySnapshot = await getDocs(q);
+    
           if (!querySnapshot.empty) {
             const userData = querySnapshot.docs[0].data();
-            setInterest(userData.interest);
+            console.log("Fetched user data:", userData); // Debugging log
+            if (userData.interest) {
+              setInterest(userData.interest);
+              fetchFact(userData.interest);
+            } else {
+              console.warn("Interest not found in user data");
+              setInterest("Not Found");
+            }
           } else {
+            console.warn("No user document found");
             setInterest("Not Found");
           }
         } catch (error) {
@@ -42,42 +38,42 @@ const Home = () => {
         }
       }
     };
+    
+
+    const fetchFact = async (topic) => {
+      try {
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const prompt = `Give me a short, interesting information (2-3 lines) about ${topic}, as i am student learning about this.`;
+        const result = await model.generateContent(prompt);
+        const response = result.response;
+        setFact(response.text() || "No fact available.");
+      } catch (error) {
+        console.error("Error fetching fact:", error);
+        setFact("Error fetching fact");
+      }
+    };
 
     fetchInterest();
   }, [user]);
 
-  // Handle logout
-  const handleLogout = async () => {
-    await signOut(auth);
-    localStorage.removeItem("rememberMe");
-    navigate("/"); // Redirect to home page
-  };
-
   return (
     <div className="home-container">
-      {/* Navbar */}
-      <nav className="navbar">
-        <h1>AI Learning Platform</h1>
-        <div>
-          {user ? (
-            <div className="user-info">
-              <span>{user.email}</span>
-              <button onClick={handleLogout}>Logout</button>
-            </div>
-          ) : (
-            <div className="auth-links">
-              <Link to="/login">Login</Link>
-              <Link to="/register">Register</Link>
-            </div>
-          )}
-        </div>
-      </nav>
+      {/* Section 1: Area of Interest & Fact */}
+      <section className="interest-section">
+        <h2>Area of Interest: {interest}</h2>
+        <p>{fact}</p>
+      </section>
 
-      {/* Main Content */}
-      <div className="main-content">
-        <LeftPanel />
-        <RightPanel interest={interest} />
-      </div>
+      {/* Section 2: Milestones Completed */}
+      <section className="milestone-section">
+        <h3>Milestones Completed</h3>
+        <div className="progress-circle">{milestonesCompleted}%</div>
+      </section>
+
+      {/* Section 3: Footer */}
+      <footer className="footer">
+        <p>&copy; 2025 LIS. All rights reserved.</p>
+      </footer>
     </div>
   );
 };

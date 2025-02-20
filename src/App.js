@@ -1,26 +1,22 @@
+// App.js
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import Main from "./pages/Main";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import RoadmapDetail from "./pages/RoadmapDetail"; // Ensure correct path
+import RoadmapDetail from "./pages/RoadmapDetail";
 
-function App() {
+const App = () => {
   return (
     <Router>
       <Routes>
-        {/* Default Home Page */}
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
-
-        {/* Authentication Routes */}
+        <Route path="/" element={<Main />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
-        {/* Roadmap Detail Route (Handles Dynamic Params) */}
         <Route path="/roadmap/:interest/:milestoneId" element={<RoadmapDetail />} />
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;
